@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 const Card = (article) => {
   // TASK 5
   // ---------------------
@@ -17,6 +19,38 @@ const Card = (article) => {
   //   </div>
   // </div>
   //
+  //create the elems
+  const cardElem = document.createElement('div');
+  const headlineElem = document.createElement('div');
+  const authorElem = document.createElement('div');
+  const imgContainerElem = document.createElement('div');
+  const imageElem = document.createElement('img');
+  const authorNameElem = document.createElement('span');
+
+  //give elems their classes
+  cardElem.classList.add('card');
+  headlineElem.classList.add('headline');
+  authorElem.classList.add('author');
+  imgContainerElem.classList.add('img-container');
+
+  //fill in the elems details
+  headlineElem.textContent = `${article.headline}`;
+  imageElem.src = `${article.authorPhoto}`;
+  authorNameElem.textContent = `${article.authorName}`;
+
+  //create Hiarchy
+  cardElem.appendChild(headlineElem);
+  cardElem.appendChild(authorElem);
+  authorElem.appendChild(imgContainerElem);
+  imgContainerElem.appendChild(imageElem);
+  authorElem.appendChild(authorNameElem);
+
+  //events 
+  cardElem.addEventListener('click', () => {
+    console.log(`${headlineElem.textContent}`);
+  })
+  //return HTML markup
+  return cardElem;
 }
 
 const cardAppender = (selector) => {
@@ -28,6 +62,21 @@ const cardAppender = (selector) => {
   // Create a card from each and every article object in the response, using the Card component.
   // Append each card to the element in the DOM that matches the selector passed to the function.
   //
+  axios.get(`http://localhost:5000/api/articles` )
+  .then((resp) => {
+    const selectedAppend = document.querySelector(selector);
+    const articlesData = resp.data.articles;
+    for (const topic in articlesData){
+      articlesData[topic].forEach( element => {
+        selectedAppend.appendChild(Card(element));
+      });
+    }
+  }).catch((err) => {
+    const errorText = document.createElement('p');
+    errorText.textContent = err;
+    document.querySelector(selector).appendChild(errorText);
+  });
+
 }
 
 export { Card, cardAppender }
